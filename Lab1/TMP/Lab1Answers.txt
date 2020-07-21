@@ -1,0 +1,56 @@
+1.*** Random Scheduler *** - 
+Advantages -
+1. The probability of choosing a specific process will be proportional to its priority which is good as it is more fair to
+processes with lower priority.
+2. Doesn't lead to starvation.
+
+Disadvantages - 
+1. Because a priority is selected at random, even though the probability of a process being picked is proportional
+to its priority, there will be cases when a lower priority process gets picked up at a time when the execution of a higher
+priority process must happen.
+2. The performance of the algorithm may vary since the execution of each of the processes is random and may not follow
+a previously executed order also it depends on the distribution of the priorities.
+
+***Linux-like Scheduler***
+Advantages - 
+1. It is a fair scheduler and schedules all runnable processes in an epoch(like a weighted round robin scheduler). 
+It does so by considering the goodness which is dependant on the priority and the number of unused ticks in a process.
+2. Higher Throughput as in a certain epoch all runnable processes are scheduled.
+
+Disadvantages -
+1. It is fairly complex and involves a lot of computation as the algorithm has to parse through the entire ready list 
+and check for process with highest goodness, update goodness and counter for a currenty running process.
+2. Three other variables - goodness, quantum and counter are stored in the PCB which need to be computed after the end if every 
+epoch.
+
+***Default XINU Scheduler***
+Advantages -
+1. It is a simple algorithm as only the highest priority process needs to be identified.
+2. The priority of a process can be selected as needed and this causes processes to be scheduled in a way that is needed.
+
+
+Disadvantages - 
+1. The wait time for processes with lower priority can be high, starvation occurs.
+2. Each process is scheduled for a fixed 'quantum' and so if the quantum value is low, the number of context switches will be high.
+
+2. 
+Null process with Random scheduler -
+Before the scheduler decides to schedule a process, it calculates the total priority of
+all the runnable processes(currently running process and all processes in the ready queue).
+When null process is the only process in the ready queue, the total priority of all the runnable processes is zero as the
+priority of null process is zero. This is when the null process is scheduled(Total priority is zero).
+
+Null process with Linux-like scheduler - 
+The linux like scheduler selects a process with highest goodness(counter+priority). The null process is run when the maximum goodness 
+obtained when trying to find a process with highest goodness is zero and the null process is the only runnbale process.
+
+Null process in the default XINU scheduler - 
+The default XINU scheduler schedules the process with the highest priority.
+The null process is executed when no other process other than the null 
+process is present in the ready queue, i.e no runnable processes(currently running and processes in the ready queue) are
+present.
+
+3. We can have P1 with priority 20, P2 with 30 and P3 with 50 or any priorities in the ratio of P1:P2:P3 = 2:3:5. Setting these priorities gives 20/(20+30+50) probability of 
+scheduiling P1, 30/(20+30+50) to P2 and P4 gets 50/(20+30+50) which is equal to 20%, 30% and 50% as required.
+As probabiliy of scheduling a process is directly proportional to the priority of the process, in general for n processes,
+P1, P2, P3....Pn each having a priority say G1, G2, G3....Gn, the CPU time in percent for Pn would be Gn/(G1+G2+G3...Gn)*100.
