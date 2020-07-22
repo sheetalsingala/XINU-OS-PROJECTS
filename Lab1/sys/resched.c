@@ -25,10 +25,9 @@ int resched()
         {
             optr->pstate = PRCURR;
             insert(currpid,rdyhead,optr->pprio);
-	   // kprintf(" currpid %d", currpid);
         }
         totPrio = getTotPrio();
-        if (totPrio == 0 )  /* Null Process */
+        if (totPrio == 0 )  /* Null Process, getRandom takes in totPrio-1, so better to have a separate condition for null*/
         {
             nptr = &proctab[ (currpid = getlast(rdytail)) ];
             nptr->pstate = PRCURR;		/* mark it currently running	*/
@@ -37,7 +36,6 @@ int resched()
             #endif
         
             ctxsw((int)&optr->pesp, (int)optr->pirmask, (int)&nptr->pesp, (int)nptr->pirmask);
-    
             return OK;
         }
     
@@ -50,10 +48,9 @@ int resched()
         
         ctxsw((int)&optr->pesp, (int)optr->pirmask, (int)&nptr->pesp, (int)nptr->pirmask);
         return OK;
-
     }
     else if (currsched == LINUXSCHED)                       /* If scheduling algorithm selected is linux like */
-    { // kprintf("resched enter....");
+    { 
         int p1;
 	if ( (optr= &proctab[currpid])->pstate == PRCURR)
         {

@@ -20,8 +20,6 @@ int getRandom(int val)
     return(rand()%(val+1));     /*Get random value between 0 to sum of all priorities */
 }
 
-
-
 int getRandomProc(int totP)
 {
     int random, p0;
