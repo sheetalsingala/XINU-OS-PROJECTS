@@ -50,85 +50,62 @@ int getTotPrio(void)
     return (totPrio);                                   /* Return total prio */
 }
 
-void goodness(void)                 /*Dummy Function that sets the goodness value - now done by quantum()*/ 
-                                    /* Once quantum is used up, set goodness as 0 */
-{
-    int i;
-
-    for(i=0; i<NPROC; i++)
-    {
-        if(proctab[i].pstate != PRFREE)
-        {
-            proctab[i].goodness = proctab[i].counter + proctab[i].pprio;
-	   // kprintf("\n Goodness %d", proctab[i].goodness);
-	    //kprintf("\n pprio %d", proctab[i].pprio); 
-        }
-
-    }
-}
-
-void quantum(void)                  /* Function that sets the quantum value or change this function to get quantum*/ 
+void quantum(void)                  /* Function that sets the quantum value and goodness */
 {
     int i;
     for(i=0; i<NPROC; i++)
     {
         if(proctab[i].pstate != PRFREE)
         {
-            
-                proctab[i].quantum = (int)(proctab[i].counter/2) + proctab[i].pprio;
+
+        proctab[i].quantum = (int)(proctab[i].counter/2) + proctab[i].pprio;
 		proctab[i].counter = proctab[i].quantum;
 		proctab[i].goodness = proctab[i].counter + proctab[i].pprio;
-	//	kprintf("\nInitial Quantum %d counter %d", proctab[i].quantum, proctab[i].counter);
+
         }
     }
 }
 
-int newProc(void)
+int newProc(void)                       /* Returns process with highest goodness value */
 {
-    int p0 = q[rdytail].qprev; 
+    int p0 = q[rdytail].qprev;
     int max = 0;    /* How to check if a new epoch is needed ? If new epoch returns NULL */
-    int maxP = 0;	
+    int maxP = 0;
     while ( p0 != rdyhead )  /* Traverse till end of ready queue */
     {
-//	kprintf("\nGoodness  %d %d", p0,proctab[p0].goodness );
-        if (max < proctab[p0].goodness)     /* safe to assume that goodness is zero when counter is zero? */
+    //	kprintf("\nGoodness  %d %d", p0,proctab[p0].goodness );
+        if (max < proctab[p0].goodness)
         {
             max = proctab[p0].goodness;
-	    maxP = p0;
-	  //  kprintf("\n max %d p0 %d", max, p0);
+	        maxP = p0;
         }
 
 	p0=q[p0].qprev;
     }
-//	kprintf("\npid: %d", maxP);
-	//kprintf("\n Process state %d", proctab[max].pstate);
     return(maxP);        /* Returns process ID with highest goodness */
 }
 
-void updateVal(int pid)
+void updateVal(int pid)                     /* Update goodness and counter for a process when resched() is called */
 {
-             int oldCount = proctab[pid].counter;
-	 	
-	     if(preempt <= 0)
-		{//	kprintf("\n Proc still exists");
+        int oldCount = proctab[pid].counter;
+
+	    if(preempt <= 0)
+		{
 			proctab[pid].counter = proctab[pid].counter - QUANTUM;
 		}
-	     else
-		{     //  kprintf("\n proctab[pid].counter, %d  preempt %d", proctab[pid].counter, preempt);
+	    else
+		{
 			proctab[pid].counter = proctab[pid].counter - QUANTUM + preempt;
 		}
-             /* Update counter value of current process*/
-             if(proctab[pid].counter <= 0)        /* Processes with used up quantum */
-            {
-                proctab[pid].goodness = 0;
-		proctab[pid].counter = 0;
-            }
-            else
-            {
-                proctab[pid].goodness = proctab[pid].goodness + proctab[pid].counter - oldCount;
-            }
-		//kprintf("\n Updated state %d", proctab[pid].pstate);
-//		if(pid){
-//		kprintf("\n Updated counter %d %d", pid, proctab[pid].counter);
-//		kprintf("\n Updated gooodness %d %d",pid, proctab[pid].goodness); 
+
+        if(proctab[pid].counter <= 0)        /* Processes with used up quantum */
+        {
+            proctab[pid].goodness = 0;
+		    proctab[pid].counter = 0;
+        }
+        else
+        {
+            proctab[pid].goodness = proctab[pid].goodness + proctab[pid].counter - oldCount;
+        }
+
 }
