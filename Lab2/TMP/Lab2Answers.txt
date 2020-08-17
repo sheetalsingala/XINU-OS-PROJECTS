@@ -1,0 +1,53 @@
+1. 
+	1.Other approach to deal with priority inversion -
+		Random Boosting - Priority of processes that hold the lock can be randomly boosted until they release the lock and exit the critical section.
+		The priority of processes holding the lock can be boosted when and if there are processes in the lock wait queue and have priority greater 
+		than the processes holding the lock. The boosted priority should be high enough so as to avoid priority inversion, example - 
+		highest possible priority of a process that can access the resource. After the lower priority process has exited the critical section, 
+		its priority is set back to its original priority.
+	
+	2.In task1.c, reader/writer locks and XINUs default semaphores are tested for priority inversion. 
+	Test Scenario - There is a reader with priority 50, a writer with priority 30. A dummy process is created for CPU starvation with priority 40.
+	At first, the writer is resumed, giving it the lock and then the reader and the dummy process is resumed. The reader is inserted in the lock wait queue.
+	In case of locks, the priority of the writer is boosted to 50, the writer on waking up is selected over the dummy process as its priority has been 
+	boosted to 50. The writer releases the lock and assigns it to reader, the reader goes to sleep and only then does the dummy process start. 
+	After the dummy process finishes executing, the reader releases the lock.
+	On the other hand, in the case of semaphores - when the writer is holding the lock, the higher priority dummy process is selected over the writer.
+	After the execution of the dummy process, the writer releases the lock and only then can the reader acquire it.
+	Comparison of results - 
+	NOTE -'L' - dummy process
+	
+Xinu Version (CSC501 1-2017 base) #11 (ssingal@vclv99-171.hpc) Fri Mar 13 17:59:07 EDT 2020
+
+16777216 bytes real mem
+106031 bytes Xinu code
+clock enabled
+
+  ----LOCK TEST----
+  Writer B: to acquire lock
+  Writer B: acquired lock, sleep 3s
+  Reader A: to acquire lock
+$$$$Prio of writer is 50$$$$
+  Writer B: to release lock
+  Reader A: acquired lock, sleep 3s
+  LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+  Reader A: to release lock
+
+  ----SEM TEST----
+  Writer B: to acquire sem
+  Writer B: acquired sem, sleep 3s
+  Reader A: to acquire sem
+$$$$Prio of writer is 30$$$$
+  LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL
+  Writer B: to release sem
+  Reader A: acquired sem, sleep 3s
+  Reader A: to release sem
+[ssingal@vclv99-171 compile](vmhost1)$
+
+2. Issues in the psuedocode - 
+	a) The function pid_to_str() need not be in the critical section of the writer. Having code that doesnt require mutual exclusion in the critical 
+section can be bad and can reduce efficiency. If the writer is killed during such a function, it exits without releasing the lock/semaphore.
+	   The same with update_global_now() - this function may not be needed in the critical section.
+	b) No bounded waiting for writer. Even if there is one reader holding the buffer, the writer waits indefinitely for the resource.
+	c) A writer clears the buffer before writing to it. A reader cannot access previously written data.
+
