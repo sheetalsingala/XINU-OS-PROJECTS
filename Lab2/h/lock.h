@@ -19,14 +19,12 @@ struct	lentry	{		/* lock table entry		*/
 	int	lcnt;		/* count for this lock, for write type semaphore it should be 1*/
 	int	lhead;		/* q index of head of list		*/
 	int	ltail;		/* q index of tail of list		*/
-    	int ltype;  	/* lock type */
+    int ltype;  	/* lock type */
 	int numreaders; 	/* Number of readers */
 	int lprio; 		/* Process with highest prio waiting on the lock */
 	int lholdprocs[NPROC];	/*All processes waiting on the lock */
-	int ver; 		/* Version of the lock */
-	
+	int ver; 		/* Version of the lock */	
 };
-
 
 extern	struct	lentry	ltable[];
 extern	int	nextlock;

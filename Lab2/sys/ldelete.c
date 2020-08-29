@@ -11,7 +11,6 @@
  * ldelete.c  --  delete a lock
  *------------------------------------------------------------------------
  */
-/* To do - check if at any time you need to return OK */
 int ldelete (int lock)
 {
     STATWORD ps; 
@@ -24,38 +23,31 @@ int ldelete (int lock)
         	restore(ps);
 		return(SYSERR);
 	}
-	/*int j;
-	for(j=0;j<NPROC; j++){									/* Make all procs holding lock 0 */
-	/*	if(ltable[lock].lholdprocs[j] == 1){
-			proctab[j].lacquired[lock] = 0 ;
-		}
-	}*/
 	int i;
-	for(i=NPROC; i>0; i--){
+	for(i=NPROC; i>0; i--){				/*All processes holding the lock */
 		if(proctab[i].pstate != PRFREE && proctab[i].lacquired[lock%NLOCKS] ==1){
 		proctab[i].lacquired[lock%NLOCKS] = 0;
 		ltable[lock%NLOCKS].lholdprocs[i] = 0;
-}}
+	}
+	}
 	
-
-    	lptr = &ltable[lock%NLOCKS];
-	lptr->lstate = LFREE;           /* Make lock free */
+    lptr = &ltable[lock%NLOCKS];
+	lptr->lstate = LFREE;           
 	lptr->ver+=1;
 	if(lptr->ver == 10){
-		lptr->ver = 0;}
-	//kprintf("\n Lock deleted");
-	if (nonempty(lptr->lhead)) {
+		lptr->ver = 0;
+	}
+	if (nonempty(lptr->lhead)) {			/* Processes waiting on the lock */
 		while( (pid=getfirst(lptr->lhead)) != EMPTY)
 		  {
 		    proctab[pid].plwaitret = DELETED;        /* Set pwaitret */
 			proctab[pid].plock = -1;
-		    ready(pid,RESCHNO);
-			
+		    ready(pid,RESCHNO);		
 		  }
 		resched();
 	}
 
 	restore(ps);
-	return(DELETED);            /* return DELETED */
+	return(DELETED);            /* Waiting on a lock returns DELETED and not OK */
 
 }

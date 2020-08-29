@@ -1,4 +1,4 @@
-/* lcreate.c - signal */
+/* lcreate.c - lcreate */
 
 #include <conf.h>
 #include <kernel.h>
@@ -12,9 +12,6 @@
  *------------------------------------------------------------------------
  */
 
-
-/* Disable and restore ps ?? */
-/* Setting Count needed ?? */
 int lcreate (void) 
 {
 
@@ -27,17 +24,16 @@ int lcreate (void)
 		if (nextlock < 0)
 			nextlock = NLOCKS-1;
 		if (ltable[lock].lstate==LFREE) {
-			ltable[lock].lstate = LUSED;
-            		ltable[lock].lcnt = 1;
+			ltable[lock].lstate = LUSED;		/*Lock descriptor used*/
+            ltable[lock].lcnt = 1;				/*Lock unused*/
 			ltable[lock].lprio = -1;
 			ltable[lock].numreaders = 0;
 			ltable[lock].ltype = LINIT;
 			for(j=0; j<NPROC;j++){
-				ltable[lock].lholdprocs[j] = 0;
+				ltable[lock].lholdprocs[j] = 0;		/* No process holds lock */
 			}
-			//kprintf("\n %d lock created", lock+ltable[lock].ver*NPROC);
 			restore(ps);
-			return(lock+ltable[lock].ver*NPROC);
+			return(lock+ltable[lock].ver*NLOCKS);	
 		}
 	}
 	restore(ps);

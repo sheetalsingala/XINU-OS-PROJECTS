@@ -200,7 +200,6 @@ LOCAL int sysinit()
 //	ripinit();
 
 	linit(); /* Initialize locks */
-//int lq = newqueue();	
 
 #ifdef NDEVS
 	for (i=0 ; i<NDEVS ; i++ ) {	    
