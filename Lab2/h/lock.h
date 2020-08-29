@@ -15,7 +15,7 @@
 #define	LUSED	1		/* this lock is used		*/
 
 struct	lentry	{		/* lock table entry		*/
-	int lstate;		/* state of lock */
+	int lstate;		/* state of lock - free or used */
 	int	lcnt;		/* count for this lock, for write type semaphore it should be 1*/
 	int	lhead;		/* q index of head of list		*/
 	int	ltail;		/* q index of tail of list		*/
