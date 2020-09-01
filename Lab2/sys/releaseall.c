@@ -1,4 +1,4 @@
-/* releaseall.c - signal */
+/* releaseall.c - releaseall */
 
 #include <conf.h>
 #include <kernel.h>
@@ -40,9 +40,9 @@ int releaseall(int nlocks, long locks)
         if(ltable[(*lock)%NLOCKS].ltype==WRITE){             /* Lock type is write, remove first waiting proc-> if its a reader*/                  /* Remove all waiting readers higher than highest waiting writer*/ 
 	int l0 = *lock; 
 	flag1 = 0;                   
-           if(q[maxReader(l0)].qkey == q[maxWriter(l0)].qkey ) 
+           if(q[maxReader(l0)].qkey == q[maxWriter(l0)].qkey ) // If both reader and writer have some prio 
                 { 
-		    if(ctr1000 - proctab[maxWriter(l0)].plwaittime <= ctr1000 - proctab[maxReader(l0)].plwaittime+lockPolicy){
+		    if(ctr1000 - proctab[maxWriter(l0)].plwaittime <= ctr1000 - proctab[maxReader(l0)].plwaittime+lockPolicy){  // If theres a reader with higher wait time, pop all readers that are valid
                     while(ctr1000 - proctab[maxWriter(l0)].plwaittime <= ctr1000 - proctab[maxReader(l0)].plwaittime + lockPolicy && q[maxReader(l0)].qkey == q[maxWriter(l0)].qkey){
                         /* remove reader from queue */	                
 			int k = maxReader(*lock);
@@ -55,7 +55,7 @@ int releaseall(int nlocks, long locks)
 			proctab[k].plwaitret = OK;  
                     }
 			}
-			else{	
+		        else{	                // Writer gets popped
 				int l = maxWriter(*lock);
 				ready(dequeue(l), RESCHNO);
 				ltable[(*lock)%NLOCKS].ltype = WRITE;
