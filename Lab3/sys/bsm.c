@@ -183,7 +183,7 @@ void bsm_unmapped(unsigned int i, int pid){
 }
 /* Writing out pages when resched is called */
 
-void switch_writeouts(int pid){
+void switch_writeouts(int pid){         // Not implemented
 	int  k;
     	int store, pageth;
 	for(k=0; k<NFRAMES; k++){  // Check inverted page table and write back to BS 

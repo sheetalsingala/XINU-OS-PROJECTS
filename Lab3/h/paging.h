@@ -36,7 +36,7 @@ typedef struct {
   unsigned int pt_base	: 20;		/* location of page?		*/
 } pt_t;
 
-typedef struct{       /* Where do i use this */
+typedef struct{      
   unsigned int pg_offset : 12;		/* page offset			*/
   unsigned int pt_offset : 10;		/* page table offset		*/
   unsigned int pd_offset : 10;		/* page directory offset	*/
@@ -44,11 +44,11 @@ typedef struct{       /* Where do i use this */
 
 typedef struct{
   int bs_status;			/* MAPPED or UNMAPPED		*/
-  int bs_pid[NPROC];				/* process id using this slot   */
-  int bs_vpno[NPROC];				/* starting virtual page number */
-  int bs_npages[NPROC];			/* number of pages in the store */
-  int bs_limit;
-  int bs_sem;				/* semaphore mechanism ?	*/
+  int bs_pid[NPROC];				/* All process ids using this BS   */
+  int bs_vpno[NPROC];				/* starting virtual page number for each process */
+  int bs_npages[NPROC];			/* number of pages held by each process*/
+  int bs_limit;             /* Set when a process first requests BS */
+  int bs_sem;				/* unused	*/
   int bs_private;   /* Indicates whether it is private or not */
 } bs_map_t;
 

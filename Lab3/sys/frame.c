@@ -67,13 +67,13 @@ SYSCALL free_frm(int i)       /* Free a frame same as reinitializing the frame *
   if ( i> NFRAMES){    /*Check if index is valid */
     return(SYSERR);
   }
-    if(frm_tab[i].fr_type == FR_PAGE){
+  if(frm_tab[i].fr_type == FR_PAGE){
 	virt_addr_t *v_a;
 	unsigned long vaddr =(unsigned long)( frm_tab[i].fr_vpno * NBPG);
-  	v_a = (virt_addr_t*)&vaddr;	
-  	unsigned int ptentry = v_a->pt_offset;
-  	unsigned int pdentry = v_a->pd_offset;
-  	unsigned int vp = vaddr/NBPG;  
+  v_a = (virt_addr_t*)&vaddr;	
+  unsigned int ptentry = v_a->pt_offset;
+  unsigned int pdentry = v_a->pd_offset;
+  unsigned int vp = vaddr/NBPG;  
 	pd_t *pdent  =(pd_t *) ((proctab[frm_tab[i].fr_pid].pdbr) + pdentry*4 );
 	pt_t *ptent = (pt_t *)((pdent->pd_base)*NBPG + ptentry*4 );
 	ptent->pt_pres = 0;	/* Invalidate entry in page table */

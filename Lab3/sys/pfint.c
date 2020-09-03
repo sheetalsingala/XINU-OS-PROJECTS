@@ -12,7 +12,6 @@
  */
 SYSCALL pfint()    
 {
-  //kprintf("\nPFINT");
   int store = -1;
   int pageth = -1;
   int flag=0;         /* flag = 1, create a PT and update PD. flag = 0, create an entry in PT */
@@ -41,12 +40,10 @@ SYSCALL pfint()
             pdent->pd_write = 1; /* Page table was accessed */
             }
 	    int frameent;
-      get_frm(&frameent);   /* Either the page is not present or PT is not present, so get a free frame */
- 
+      get_frm(&frameent);   /* Either the page is not present or PT is not present, so get a free frame */ 
       if(page_replace_policy == LFU){
                 frm_tab[frameent].fr_refcnt += 1;
         }
-
       if(prhead == PRHEAD){ /*Queue inserting */        /*Only firsttime, inset at head */
             prhead = frameent;    /* Set head of PR queue */
             frm_tab[frameent].fr_pframe = PRHEAD;
@@ -61,9 +58,7 @@ SYSCALL pfint()
             frm_tab[frameent].fr_nframe = prhead;
             prtail = frameent;
       }
-
             frm_tab[frameent].fr_status = FRM_MAPPED;
-
             pt_t *ptent = (pt_t *)((pdent->pd_base)*NBPG + ptentry*4 );
             ptent->pt_pres = 1;
             ptent->pt_base = FRAME0 + frameent;   /* Address in the memory */

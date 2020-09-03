@@ -27,7 +27,6 @@ int	resched()
 
 	if ( ( (optr= &proctab[currpid])->pstate == PRCURR) &&
 	   (lastkey(rdytail)<optr->pprio)) {
-//		kprintf("\nContinue running same proc");
 		restore(PS);
 		return(OK);
 	}
