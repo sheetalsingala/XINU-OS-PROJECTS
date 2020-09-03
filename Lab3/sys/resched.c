@@ -27,6 +27,7 @@ int	resched()
 
 	if ( ( (optr= &proctab[currpid])->pstate == PRCURR) &&
 	   (lastkey(rdytail)<optr->pprio)) {
+//		kprintf("\nContinue running same proc");
 		restore(PS);
 		return(OK);
 	}
@@ -49,7 +50,7 @@ int	resched()
 		optr->pstate = PRREADY;
 		insert(currpid,rdyhead,optr->pprio);
 	}
-
+	//switch_writeoutsr(currpid);
 	/* remove highest priority process at end of ready list */
 
 	nptr = &proctab[ (currpid = getlast(rdytail)) ];
@@ -84,7 +85,7 @@ int	resched()
 #endif
 	write_cr3(nptr->pdbr);	
 	ctxsw(&optr->pesp, optr->pirmask, &nptr->pesp, nptr->pirmask);
-
+	//write_cr3(nptr->pdbr);
 #ifdef	DEBUG
 	PrintSaved(nptr);
 #endif

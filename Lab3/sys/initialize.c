@@ -51,7 +51,7 @@ int prhead = PRHEAD;
 int prtail = PRTAIL;
 int currpoint = 0;
 /* Init paging structures */
-int debug_mode = 1;
+int debug_mode = 0;
 bs_map_t bsm_tab[BSELIMIT];
 fr_map_t frm_tab[NFRAMES];
 /*  added for the demand paging */
